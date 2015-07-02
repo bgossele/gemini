@@ -3,7 +3,8 @@ gemini_cassandra
 
 A repository for my master's thesis on scaling up the genome sequencing pipeline by using NoSQL or NewSQL datastores.
 
-As a case study, I developed a version of `GEMINI`, a genome analysis tool, running on Apache Cassandra i.s.o. SQLite.
+As a case study, I developed a version of `GEMINI`, a genome analysis tool, running on Apache Cassandra i.s.o. SQLite. This is a fork of version 0.1.11 of `GEMINI`.
+
 My thesis text (in Dutch), detailing design decisions, can be found here:
 
 [![PDF Status](https://www.sharelatex.com/github/repos/bgossele/zesis/builds/latest/badge.svg)](https://www.sharelatex.com/github/repos/bgossele/zesis/builds/latest/output.pdf)
