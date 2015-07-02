@@ -1,13 +1,3 @@
-check()
-{
-	if diff $1 $2; then
-    	echo ok
-	else
-    	echo fail
-	fi
-}
-export -f check
-
 ####################################################################
 # 1. Test the samples table
 ####################################################################
@@ -247,7 +237,6 @@ rm obs exp
 # 14. Test a query of the variants table with a where clause
 #     and a more complex genotype filter
 ####################################################################
-# NOTE: this test fails with --use-bcolz because of the the limit 5
 echo "    query.t14...\c"
 echo "chr1	1219381	1219382	C	G	SCNN1D	C/C	C/C
 chr1	1219476	1219477	T	G	SCNN1D	T/T	T/T
@@ -315,7 +304,7 @@ rm obs exp
 # 16. Test a basic query of the variants table with show-variant-samples
 #########################################################################
 echo "    query.t16...\c"
-echo "chrom	start	end	ref	alt	variant_samples	het_samples	hom_alt_samples
+echo "chrom	start	end	ref	alt	variant_samples	HET_samples	HOM_ALT_samples
 chr1	30547	30548	T	G	1478PC0016,1719PC0007,1719PC0009		1478PC0016,1719PC0007,1719PC0009
 chr1	30859	30860	G	C	1719PC0005,1478PC0017B	1719PC0005	1478PC0017B
 chr1	30866	30869	CCT	C	1094PC0012,1094PC0021,1478PC0011,1719PC0005,1478PC0014B	1094PC0012,1094PC0021,1478PC0011,1719PC0005	1478PC0014B
@@ -331,7 +320,7 @@ rm obs exp
 # request for all sample genotype types and a request for the sample names
 ##########################################################################
 echo "    query.t17...\c"
-echo "chrom	start	end	ref	alt	gt_types	variant_samples	het_samples	hom_alt_samples
+echo "chrom	start	end	ref	alt	gt_types	variant_samples	HET_samples	HOM_ALT_samples
 chr1	30547	30548	T	G	2,2,2,2,2,2,0,2,2,2,2,2,2,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,0,2,3,2,3,2,2,2,2,2,0,2,2,2,2,2,2,2	1478PC0016,1719PC0007,1719PC0009		1478PC0016,1719PC0007,1719PC0009
 chr1	30859	30860	G	C	0,0,0,0,2,2,0,2,0,0,0,2,2,0,0,2,2,2,2,2,0,2,2,0,2,0,0,0,0,3,0,2,0,2,2,2,2,2,2,2,2,2,1,2,0,2,0,2,2,0,0,0,0,2,2,2,2,2,2,2	1719PC0005,1478PC0017B	1719PC0005	1478PC0017B
 chr1	30866	30869	CCT	C	0,0,1,0,2,2,0,2,0,1,0,2,2,0,0,2,2,2,2,2,0,2,2,1,2,0,3,0,0,0,0,2,0,2,2,2,2,0,2,2,2,2,1,2,0,2,0,0,2,0,0,0,0,2,2,2,2,2,2,2	1094PC0012,1094PC0021,1478PC0011,1719PC0005,1478PC0014B	1094PC0012,1094PC0021,1478PC0011,1719PC0005	1478PC0014B
@@ -421,15 +410,15 @@ rm obs exp
 # 22. Test transposed ped (TPED) query format
 ########################################################################
 echo "    query.t22...\c"
-echo "10 1 0 1142207 C C C C C C C C
-10 2 0 48003991 T T C T C T C C
-10 3 0 52004314 0 0 0 0 C C C C
-10 4 0 52497528 0 0 C C C C 0 0
-10 5 0 126678091 G G G G G G G A
-10 6 0 135210790 T T C C C C T T
-10 7 0 135336655 0 0 A A 0 0 A A
-10 8 0 135369531 T T T C T C T T
-16 9 0 72057434 C T C C C C C C" > exp
+echo "10 10:1142207-1142208:T|C:1 0 1142207 C C C C C C C C
+10 10:48003991-48003992:C|T:2 0 48003991 T T C T C T C C
+10 10:52004314-52004315:T|C:3 0 52004314 0 0 0 0 C C C C
+10 10:52497528-52497529:G|C:4 0 52497528 0 0 C C C C 0 0
+10 10:126678091-126678092:G|A:5 0 126678091 G G G G G G G A
+10 10:135210790-135210791:T|C:6 0 135210790 T T C C C C T T
+10 10:135336655-135336656:G|A:7 0 135336655 0 0 A A 0 0 A A
+10 10:135369531-135369532:T|C:8 0 135369531 T T T C T C T T
+16 16:72057434-72057435:C|T:9 0 72057434 C T C C C C C C" > exp
 gemini query --format tped -q "select * from variants" test4.snpeff.ped.db > obs
 check obs exp
 rm obs exp
@@ -502,7 +491,7 @@ rm obs exp
 # 29. Test the carrier/noncarrier column summary
 ########################################################################
 echo "    query.t29...\c"
-echo "chrom	start	ref	alt	gt_types	variant_samples	het_samples	hom_alt_samples	unaffected_carrier	affected_carrier	unaffected_noncarrier	affected_noncarrier	unknown
+echo "chrom	start	ref	alt	gt_types	variant_samples	HET_samples	HOM_ALT_samples	unaffected_carrier	affected_carrier	unaffected_noncarrier	affected_noncarrier	unknown
 chr10	1142207	T	C	3,3,3,3	M10475,M10478,M10500,M128215		M10475,M10478,M10500,M128215	2	2	0	0	0
 chr10	48003991	C	T	3,1,1,0	M10478,M10500,M10475	M10478,M10500	M10475	1	2	1	0	0
 chr10	52004314	T	C	2,2,3,3	M10500,M128215		M10500,M128215	1	1	0	0	2
@@ -755,18 +744,7 @@ gemini query --header -q "select v.chrom, v.end, v.gene, g.mam_phenotype_id from
 check obs exp
 rm obs exp
 
-#########################################################################
-# 41. Show an expanded version of sample information with --format sampledetail
-#########################################################################
-echo "    query.t41...\c"
-echo "chrom	start	ref	family_id	name	paternal_id	maternal_id	sex	phenotype
-chr1	30547	T	0	1478PC0016	0	0	-9	-9
-chr1	30547	T	0	1719PC0007	0	0	-9	-9
-chr1	30547	T	0	1719PC0009	0	0	-9	-9" > exp
-gemini query --header --format sampledetail --show-samples -q "select chrom, start, ref \
-                                                                from variants limit 1" test.query.db > obs
-check obs exp
-rm obs exp
+
 
 
 
